@@ -1,0 +1,68 @@
+# Kafka UI Helm Values
+# 参考文档: https://github.com/kafbat/kafka-ui
+
+# 副本数
+replicaCount: 1
+
+# 镜像配置
+image:
+  repository: ghcr.io/kafbat/kafka-ui
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# 应用配置（通过环境变量）
+env:
+  - name: KAFKA_CLUSTERS_0_NAME
+    value: "local-kraft"
+  - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+    value: "my-kafka-kafka-bootstrap.kafka-dev.svc.cluster.local:9092"
+  - name: KAFKA_CLUSTERS_0_READONLY
+    value: "false"
+  - name: SERVER_PORT
+    value: "8080"
+
+# Service 配置
+service:
+  type: NodePort
+  port: 8080
+  nodePort: 30080
+  targetPort: 8080
+
+# Ingress 配置（Minikube 环境暂不启用）
+ingress:
+  enabled: false
+
+# 资源限制（学习环境）
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+# 持久化（不需要）
+persistence:
+  enabled: false
+
+# 健康检查
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+# 节点选择（学习环境不需要）
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
