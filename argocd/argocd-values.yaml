@@ -1,0 +1,40 @@
+# Argo CD Helm Values
+# 参考: https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
+
+# 副本配置
+controller:
+  replicas: 1
+
+server:
+  replicas: 1
+  service:
+    type: NodePort
+    nodePort: 30090
+    port: 443
+    targetPort: 8080
+  
+  # 禁用 TLS（学习环境，简化配置）
+  insecure: true
+
+repoServer:
+  replicas: 1
+
+# 资源限制（学习环境）
+global:
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# 禁用不需要的组件
+dex:
+  enabled: false
+
+notifications:
+  enabled: false
+
+applicationSet:
+  enabled: false
