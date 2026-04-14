@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: kafka-ui
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+      - name: kafka-ui
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+          name: http
+        env:
+        - name: KAFKA_CLUSTERS_0_NAME
+          value: {{ .Values.kafka.clusterName }}
+        - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+          value: {{ .Values.kafka.bootstrapServers }}
+        - name: KAFKA_CLUSTERS_0_READONLY
+          value: {{ .Values.kafka.readonly | quote }}
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.resources.limits.cpu }}
