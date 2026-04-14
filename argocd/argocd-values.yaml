@@ -1,26 +1,14 @@
 # Argo CD Helm Values
-# 参考: https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
+# 参考: https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
 
-# 副本配置
+# 全局配置
+global:
+  image:
+    tag: latest
+
+# Controller 配置
 controller:
   replicas: 1
-
-server:
-  replicas: 1
-  service:
-    type: NodePort
-    nodePort: 30090
-    port: 443
-    targetPort: 8080
-  
-  # 禁用 TLS（学习环境，简化配置）
-  insecure: true
-
-repoServer:
-  replicas: 1
-
-# 资源限制（学习环境）
-global:
   resources:
     requests:
       memory: "256Mi"
@@ -29,12 +17,69 @@ global:
       memory: "512Mi"
       cpu: "500m"
 
-# 禁用不需要的组件
+# Server 配置（关键：Service 在这里配置）
+server:
+  replicas: 1
+  
+  # Service 配置
+  service:
+    type: NodePort
+    # 使用这些字段名
+    servicePortHttp: 80
+    servicePortHttps: 443
+    containerPort: 8080
+    nodePortHttp: 30081
+    nodePortHttps: 30091
+  
+  # 禁用 TLS（学习环境简化）
+  insecure: true
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Repo Server 配置
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Redis 配置
+redis:
+  enabled: true
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+# ApplicationSet 配置
+applicationset:
+  enabled: true
+  controller:
+    replicas: 1
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+
+# 禁用不需要的组件（学习环境）
 dex:
   enabled: false
 
 notifications:
-  enabled: false
-
-applicationSet:
   enabled: false
