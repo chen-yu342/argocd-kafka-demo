@@ -31,6 +31,7 @@ metadata:
 spec:
   kafka:
     version: 4.2.0
+    image: quay.io/strimzi/kafka:0.51.0-kafka-4.2.0
     config:
       offsets.topic.replication.factor: 1
       transaction.state.log.replication.factor: 1
